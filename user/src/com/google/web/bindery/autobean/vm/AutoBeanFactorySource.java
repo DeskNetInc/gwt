@@ -23,14 +23,16 @@ import com.google.web.bindery.autobean.shared.impl.EnumMap;
 import com.google.web.bindery.autobean.vm.impl.FactoryHandler;
 import com.google.web.bindery.autobean.vm.impl.ProxyAutoBean;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Generates JVM-compatible implementations of AutoBeanFactory and AutoBean
- * types.
- * <p>
- * This implementation is written assuming that the AutoBeanFactory and
- * associated declarations will validate if compiled and used with the
- * AutoBeanFactoyModel.
- * <p>
+ * Generates JVM-compatible implementations of AutoBeanFactory and AutoBean types.
+ * <p/>
+ * This implementation is written assuming that the AutoBeanFactory and associated declarations will validate if compiled and used
+ * with the AutoBeanFactoyModel.
+ * <p/>
  * <span style='color: red'>This is experimental, unsupported code.</span>
  */
 public class AutoBeanFactorySource {
@@ -44,17 +46,28 @@ public class AutoBeanFactorySource {
 
   /**
    * Create an instance of an AutoBeanFactory.
-   * 
-   * @param <F> the factory type
+   *
+   * @param <F>   the factory type
    * @param clazz the Class representing the factory interface
    * @return an instance of the AutoBeanFactory
    */
   public static <F extends AutoBeanFactory> F create(Class<F> clazz) {
     Configuration.Builder builder = new Configuration.Builder();
-    Category cat = clazz.getAnnotation(Category.class);
-    if (cat != null) {
-      builder.setCategories(cat.value());
+
+    Set<Class<?>> categoryClasses = new HashSet<Class<?>>();
+    Set<Class<?>> factoryInterfacesWithCategories = new HashSet<Class<?>>();
+    getInterfacesWithCategoryClassDeclarations(clazz, factoryInterfacesWithCategories);
+    for (Class<?> factoryClass : factoryInterfacesWithCategories) {
+      Category cat = factoryClass.getAnnotation(Category.class);
+      Collections.addAll(categoryClasses, cat.value());
     }
+
+    if (!categoryClasses.isEmpty()) {
+      Class<?>[] categoryClassArray = new Class<?>[categoryClasses.size()];
+      categoryClasses.toArray(categoryClassArray);
+      builder.setCategories(categoryClassArray);
+    }
+
     NoWrap noWrap = clazz.getAnnotation(NoWrap.class);
     if (noWrap != null) {
       builder.setNoWrap(noWrap.value());
@@ -63,10 +76,20 @@ public class AutoBeanFactorySource {
     return ProxyAutoBean.makeProxy(clazz, new FactoryHandler(builder.build()), EnumMap.class);
   }
 
+  private static void getInterfacesWithCategoryClassDeclarations(Class<?> clazz, Set<Class<?>> interfaces) {
+    if (clazz.getAnnotation(Category.class) != null) {
+      interfaces.add(clazz);
+    }
+
+    for (Class<?> extendedInterface : clazz.getInterfaces()) {
+      getInterfacesWithCategoryClassDeclarations(extendedInterface, interfaces);
+    }
+  }
+
   /**
    * Create an instance of an AutoBean directly.
-   * 
-   * @param <T> the interface type implemented by the AutoBean
+   *
+   * @param <T>   the interface type implemented by the AutoBean
    * @param clazz the interface type implemented by the AutoBean
    * @return an instance of an AutoBean
    */

@@ -17,15 +17,7 @@ package com.google.web.bindery.autobean.gwt.rebind.model;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
-import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.core.ext.typeinfo.JEnumConstant;
-import com.google.gwt.core.ext.typeinfo.JEnumType;
-import com.google.gwt.core.ext.typeinfo.JGenericType;
-import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.core.ext.typeinfo.JParameter;
-import com.google.gwt.core.ext.typeinfo.JParameterizedType;
-import com.google.gwt.core.ext.typeinfo.JType;
-import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.google.gwt.core.ext.typeinfo.*;
 import com.google.gwt.editor.rebind.model.ModelUtils;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
@@ -33,15 +25,7 @@ import com.google.web.bindery.autobean.shared.AutoBeanFactory.Category;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory.NoWrap;
 import com.google.web.bindery.autobean.shared.impl.EnumMap.ExtraEnums;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -86,11 +70,19 @@ public class AutoBeanFactoryModel {
 
     // Process annotations
     {
-      Category categoryAnnotation = factoryType.getAnnotation(Category.class);
-      if (categoryAnnotation != null) {
-        categoryTypes = new ArrayList<JClassType>(
-            categoryAnnotation.value().length);
-        processClassArrayAnnotation(categoryAnnotation.value(), categoryTypes);
+      Set<Class<?>> categoryClasses = new HashSet<Class<?>>();
+      for(JClassType factoryClass : factoryType.getFlattenedSupertypeHierarchy()) {
+        Category categoryAnnotation = factoryClass.getAnnotation(Category.class);
+        if(categoryAnnotation != null) {
+          Collections.addAll(categoryClasses, categoryAnnotation.value());
+        }
+      }
+
+      if (!categoryClasses.isEmpty()) {
+        categoryTypes = new ArrayList<JClassType>(categoryClasses.size());
+        Class<?>[] classArray = new Class<?>[categoryClasses.size()];
+        categoryClasses.toArray(classArray);
+        processClassArrayAnnotation(classArray, categoryTypes);
       } else {
         categoryTypes = null;
       }
