@@ -15,22 +15,10 @@
  */
 package com.google.web.bindery.autobean.shared.impl;
 
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanFactory;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import com.google.web.bindery.autobean.shared.AutoBeanVisitor;
+import com.google.web.bindery.autobean.shared.*;
 import com.google.web.bindery.autobean.shared.AutoBeanVisitor.ParameterizationVisitor;
-import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.ValueCodex;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Contains the implementation details of AutoBeanCodex. This type was factored
@@ -393,9 +381,9 @@ public class AutoBeanCodexImpl {
 
     @Override
     public boolean visitValueProperty(String propertyName, Object value, PropertyContext ctx) {
-      if (value != null && !value.equals(ValueCodex.getUninitializedFieldValue(ctx.getType()))) {
+      //if (value != null && !value.equals(ValueCodex.getUninitializedFieldValue(ctx.getType()))) {
         encodeProperty(propertyName, value, ctx);
-      }
+      //}
       return false;
     }
 
