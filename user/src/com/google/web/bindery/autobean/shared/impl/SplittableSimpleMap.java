@@ -19,13 +19,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
 import com.google.web.bindery.autobean.shared.impl.AutoBeanCodexImpl.Coder;
 import com.google.web.bindery.autobean.shared.impl.AutoBeanCodexImpl.EncodeState;
 
-import java.util.AbstractCollection;
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A Map implementation for regular JSON maps with value-type keys.
@@ -87,8 +81,8 @@ public class SplittableSimpleMap<K, V> implements Map<K, V>, HasSplittable {
               @SuppressWarnings("unchecked")
               final K key = (K) keyCoder.decode(state, StringQuoter.split(StringQuoter
                   .quote(encodedKey)));
-              @SuppressWarnings("unchecked")
-              final V value = (V) valueCoder.decode(state, data.get(encodedKey));
+
+              final V value = getRaw(encodedKey);
 
               public K getKey() {
                 return key;
