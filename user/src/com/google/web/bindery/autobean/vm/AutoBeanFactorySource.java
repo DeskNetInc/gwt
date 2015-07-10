@@ -24,7 +24,7 @@ import com.google.web.bindery.autobean.vm.impl.FactoryHandler;
 import com.google.web.bindery.autobean.vm.impl.ProxyAutoBean;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -54,8 +54,8 @@ public class AutoBeanFactorySource {
   public static <F extends AutoBeanFactory> F create(Class<F> clazz) {
     Configuration.Builder builder = new Configuration.Builder();
 
-    Set<Class<?>> categoryClasses = new HashSet<Class<?>>();
-    Set<Class<?>> factoryInterfacesWithCategories = new HashSet<Class<?>>();
+    Set<Class<?>> categoryClasses = new LinkedHashSet<Class<?>>();
+    Set<Class<?>> factoryInterfacesWithCategories = new LinkedHashSet<Class<?>>();
     getInterfacesWithCategoryClassDeclarations(clazz, factoryInterfacesWithCategories);
     for (Class<?> factoryClass : factoryInterfacesWithCategories) {
       Category cat = factoryClass.getAnnotation(Category.class);

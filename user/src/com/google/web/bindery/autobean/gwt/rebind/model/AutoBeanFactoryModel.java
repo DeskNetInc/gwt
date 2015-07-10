@@ -70,7 +70,7 @@ public class AutoBeanFactoryModel {
 
     // Process annotations
     {
-      Set<Class<?>> categoryClasses = new HashSet<Class<?>>();
+      Set<Class<?>> categoryClasses = new LinkedHashSet<Class<?>>();
       for(JClassType factoryClass : factoryType.getFlattenedSupertypeHierarchy()) {
         Category categoryAnnotation = factoryClass.getAnnotation(Category.class);
         if(categoryAnnotation != null) {
