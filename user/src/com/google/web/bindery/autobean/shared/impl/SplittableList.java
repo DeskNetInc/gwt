@@ -69,6 +69,10 @@ public class SplittableList<E> extends AbstractList<E> implements HasSplittable 
 
   @Override
   public void add(int index, E element) {
+    for(int i = size() - 1; i >= index; i--) {
+      set(state, data, i + 1, elementCoder, get(i));
+    }
+
     set(state, data, index, elementCoder, element);
   }
 
